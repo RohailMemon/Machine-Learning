@@ -14,6 +14,17 @@ Installation
 Prerequisites
 
 Python 3.x
+
 TensorFlow 2.x
+
 OpenCV
+
 Keras
+
+Model Architecture
+
+The CNN model consists of multiple Conv2D and MaxPooling2D layers, Dropout layers for regularization, and Dense layers for classification. The model is compiled with the Adam optimizer and categorical cross-entropy loss function.
+
+Dataset
+
+The model was trained and validated on a dataset not included in this repository due to size constraints. Please ensure you have a similar structured dataset in Dataset/train and Dataset/test directories for training and evaluation purposes.
