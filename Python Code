@@ -1,1 +1,202 @@
+import keras,os
+from keras.models import Sequential
+from keras.layers import Dense, Conv2D, MaxPool2D , Flatten
+from keras.preprocessing.image import ImageDataGenerator
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import backend as K
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
+import cv2 
+import matplotlib.pyplot as plt
+from keras.models import load_model
+from time import sleep
+from keras.preprocessing.image import img_to_array
+from keras.preprocessing import image
+import cv2
+import numpy as np
 
+train_dir = 'Desktop/python/ds/Dataset/train'
+val_dir = 'Desktop/python/ds/Dataset/test'
+
+num_train = 28789
+num_val = 3589
+batch_size = 64
+num_epoch = 50
+
+train_datagen = ImageDataGenerator(rescale=1./255)
+val_datagen = ImageDataGenerator(rescale=1./255)
+
+train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        target_size=(48,48),
+        batch_size=batch_size,
+        color_mode="grayscale",
+        class_mode='categorical')
+
+validation_generator = val_datagen.flow_from_directory(
+        val_dir,
+        target_size=(48,48),
+        batch_size=batch_size,
+        color_mode="grayscale",
+        class_mode='categorical')
+
+model = Sequential()
+
+model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
+model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Flatten())
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(7, activation='softmax'))
+
+model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.Adam(),
+              metrics=['accuracy'])
+
+model.summary()
+
+history1 = model.fit_generator(
+            train_generator,
+            steps_per_epoch=num_train // batch_size,
+            epochs=num_epoch,
+            validation_data=validation_generator,
+            validation_steps=num_val // batch_size)
+
+model.save("verynewwmodel.h5")
+
+new_model = tf.keras.models.load_model('verynewwmodel.h5')
+
+# Show the model architecture
+new_model.summary()
+
+happiness = cv2.imread("/Users/Rohail/Desktop/python/ds/Dataset/test/Happy/4.jpg")
+happiness.shape
+plt.imshow(cv2.cvtColor(happiness,cv2.COLOR_BGR2RGB))
+happy = cv2.cvtColor(happiness, cv2.COLOR_BGR2GRAY)
+happy.shape
+happy = np.expand_dims(happy,axis=0)
+predictionss = new_model.predict(happy)
+predictionss[0]
+np.argmax(predictionss)
+
+sadness = cv2.imread("/Users/Rohail/Desktop/python/ds/Dataset/test/Sad/22.jpg")
+sadness.shape
+plt.imshow(cv2.cvtColor(sadness,cv2.COLOR_BGR2RGB))
+sad = cv2.cvtColor(sadness, cv2.COLOR_BGR2GRAY)
+sad.shape
+sad = np.expand_dims(sad,axis=0)
+predictionss = new_model.predict(sad)
+predictionss[0]
+np.argmax(predictionss)
+
+angriness = cv2.imread("/Users/Rohail/Desktop/python/ds/Dataset/test/Angry/41.jpg")
+angriness.shape
+plt.imshow(cv2.cvtColor(angriness,cv2.COLOR_BGR2RGB))
+angry = cv2.cvtColor(angriness, cv2.COLOR_BGR2GRAY)
+angry.shape
+angry = np.expand_dims(angry,axis=0)
+predictionss = new_model.predict(angry)
+predictionss[0]
+
+fearness = cv2.imread("/Users/Rohail/Desktop/python/ds/Dataset/test/Fear/12.jpg")
+fearness.shape
+plt.imshow(cv2.cvtColor(fearness,cv2.COLOR_BGR2RGB))
+fear = cv2.cvtColor(fearness, cv2.COLOR_BGR2GRAY)
+fear.shape
+fear = np.expand_dims(fear,axis=0)
+predictionss = new_model.predict(fear)
+predictionss[0]
+np.argmax(predictionss)
+
+disgustness = cv2.imread("/Users/Rohail/Desktop/python/ds/Dataset/test/Disgust/49.jpg")
+disgustness.shape
+plt.imshow(cv2.cvtColor(disgustness,cv2.COLOR_BGR2RGB))
+disgust = cv2.cvtColor(disgustness, cv2.COLOR_BGR2GRAY)
+disgust.shape
+disgust = np.expand_dims(disgust,axis=0)
+predictionss = new_model.predict(disgust)
+predictionss[0]
+np.argmax(predictionss)
+
+surprised = cv2.imread("/Users/Rohail/Desktop/python/ds/Dataset/test/Surprise/2.jpg")
+surprised.shape
+plt.imshow(cv2.cvtColor(surprised,cv2.COLOR_BGR2RGB))
+surprise = cv2.cvtColor(surprised, cv2.COLOR_BGR2GRAY)
+surprise.shape
+surprise = np.expand_dims(surprise,axis=0)
+predictionss = new_model.predict(surprise)
+predictionss[0]
+np.argmax(predictionss)
+
+from keras.models import load_model
+from time import sleep
+from keras.preprocessing.image import img_to_array
+from keras.preprocessing import image
+import cv2
+import numpy as np
+
+face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+emotion_labels = ['Angry','Disgust','Fear','Happy','Neutral', 'Sad', 'Surprise']
+
+stressindicator = ['Stressed','Non-stressed']
+cap = cv2.VideoCapture(0)
+
+
+
+while True:
+    _, frame = cap.read()
+    labels = []
+    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray)
+
+    for (x,y,w,h) in faces:
+        cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,255),2)
+        roi_gray = gray[y:y+h,x:x+w]
+        roi_gray = cv2.resize(roi_gray,(48,48),interpolation=cv2.INTER_AREA)
+
+
+
+        if np.sum([roi_gray])!=0:
+            roi = roi_gray.astype('float')/255.0
+            roi = img_to_array(roi)
+            roi = np.expand_dims(roi,axis=0)
+
+            prediction = new_model.predict(roi)[0]
+            label=emotion_labels[prediction.argmax()]
+            label_position = (x,y)
+            cv2.putText(frame,label,label_position,cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
+            
+            if label == 'Angry' or label == 'Disgust' or label == 'Fear':
+                 labells = stressindicator[0]
+
+                labells_position = (30,80)
+                cv2.putText(frame,labells,labells_position,cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
+            else:
+                labells = stressindicator[1]
+                labells_position = (30,80)
+                cv2.putText(frame,labells,labells_position,cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
+                
+                
+            
+                
+        else:
+            cv2.putText(frame,'No Faces',(30,80),cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
+    cv2.imshow('Emotion Detector',frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
