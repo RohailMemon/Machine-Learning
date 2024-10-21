@@ -1,4 +1,4 @@
-                                                      Emotion Detection Project
+                                                      Real-Time Stress and Emotion Recognition System
 Project Overview
 
 This project is focused on developing a Convolutional Neural Network (CNN) to accurately detect human emotions from facial expressions in real-time. It leverages TensorFlow and OpenCV to classify emotions into seven categories: Angry, Disgust, Fear, Happy, Neutral, Sad, and Surprise. Additionally, it assesses stress levels based on the detected emotions. This README outlines the project setup, model architecture, and instructions for running the application.
